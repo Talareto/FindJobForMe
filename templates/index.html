@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../static/styles.css">
+  <title>CV Matcher — dopasuj ofertę do swojego CV</title>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    CV Matcher
+  </div>
+  <span class="nav-badge">beta</span>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">AI-powered</div>
+  <h1>Twoje CV vs.<br><span>każda oferta pracy</span></h1>
+  <p class="hero-sub">Wgraj CV, podaj link do oferty — dostaniesz wynik dopasowania, listę braków i sugestię poprawek.</p>
+</section>
+
+<main class="main-card">
+  <div class="card">
+
+    <!-- Tabs -->
+    <div class="steps">
+      <div class="step-tab active" id="tab-1" onclick="goToStep(1)">
+        <span class="step-num" id="num-1">1</span>
+        Twoje CV
+      </div>
+      <div class="step-tab" id="tab-2" onclick="goToStep(2)">
+        <span class="step-num" id="num-2">2</span>
+        Oferta pracy
+      </div>
+    </div>
+
+    <!-- Error box -->
+    <div class="error-box" id="error-box">
+      <span>⚠</span>
+      <span id="error-msg"></span>
+    </div>
+
+    <!-- Panel 1: Upload CV -->
+    <div class="panel active" id="panel-1">
+      <label class="field-label">Wgraj swoje CV</label>
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="cv-file" accept=".pdf" onchange="onFileChosen(this)">
+        <div class="upload-icon">📄</div>
+        <div class="upload-title">Przeciągnij plik tutaj</div>
+        <div class="upload-sub">lub kliknij, żeby wybrać · PDF max 5 MB</div>
+      </div>
+
+      <div class="file-chosen" id="file-chosen">
+        <span class="file-chosen-icon">✓</span>
+        <span class="file-chosen-name" id="file-name"></span>
+        <button class="file-remove" onclick="removeFile()" title="Usuń plik">✕</button>
+      </div>
+
+      <div class="divider"></div>
+      <button class="btn-primary" id="btn-next" onclick="goToStep(2)" disabled>
+        Dalej — wybierz ofertę →
+      </button>
+    </div>
+
+    <!-- Panel 2: URL oferty -->
+    <div class="panel" id="panel-2">
+      <label class="field-label" for="job-url">Link do oferty pracy</label>
+      <div class="url-input-wrap">
+        <span class="url-prefix">🔗</span>
+        <input type="url" id="job-url" placeholder="https://nofluffjobs.com/pl/job/..." oninput="onUrlInput()">
+      </div>
+
+      <div class="sources-grid">
+        <button class="source-chip" onclick="setPlaceholder('nofluffjobs')">NoFluffJobs</button>
+        <button class="source-chip" onclick="setPlaceholder('theprotocol')">theprotocol.it</button>
+        <button class="source-chip" onclick="setPlaceholder('pracuj')">pracuj.pl</button>
+        <button class="source-chip" onclick="setPlaceholder('linkedin')">LinkedIn</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="btn-secondary" onclick="goToStep(1)">← Wróć</button>
+        <button class="btn-primary" id="btn-analyze" onclick="startAnalysis()" disabled style="flex:1">
+          Analizuj dopasowanie →
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loading">
+      <div class="spinner"></div>
+      <div class="loading-title">Analizuję dopasowanie…</div>
+      <div class="loading-steps">
+        <div class="loading-step active" id="ls-1">
+          <div class="loading-step-dot"></div> Wczytuję treść CV
+        </div>
+        <div class="loading-step" id="ls-2">
+          <div class="loading-step-dot"></div> Pobieram treść oferty
+        </div>
+        <div class="loading-step" id="ls-3">
+          <div class="loading-step-dot"></div> Analizuję z Claude AI
+        </div>
+        <div class="loading-step" id="ls-4">
+          <div class="loading-step-dot"></div> Przygotowuję wyniki
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  CV Matcher · Twoje pliki nie są nigdzie przechowywane po analizie
+</footer>
+<script src="static/script.js"></script>
+</body>
+</html>

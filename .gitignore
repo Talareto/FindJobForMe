@@ -1,0 +1,21 @@
+# Środowisko wirtualne
+venv/
+
+# Zmienne środowiskowe (klucze API - NIGDY nie wrzucaj na GitHuba!)
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Wgrane pliki CV użytkowników
+uploads/
+
+# VS Code
+.vscode/
+
+# System
+.DS_Store
+Thumbs.db

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <title>Wyniki analizy — CV Matcher</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f11;
+      --surface: #18181c;
+      --surface2: #222228;
+      --border: #2e2e38;
+      --text: #f0eff5;
+      --muted: #7b7a8a;
+      --accent: #7c6af7;
+      --accent-dim: rgba(124, 106, 247, 0.12);
+      --green: #4ade80;
+      --green-dim: rgba(74, 222, 128, 0.1);
+      --green-border: rgba(74, 222, 128, 0.3);
+      --amber: #fbbf24;
+      --amber-dim: rgba(251, 191, 36, 0.1);
+      --amber-border: rgba(251, 191, 36, 0.3);
+      --red: #f87171;
+      --red-dim: rgba(248, 113, 113, 0.1);
+      --red-border: rgba(248, 113, 113, 0.3);
+      --radius: 12px;
+      --radius-lg: 20px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+    .btn-back {
+      font-size: 13px;
+      color: var(--muted);
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .btn-back:hover { color: var(--text); border-color: var(--accent); }
+
+    /* ── Layout ── */
+    .page { max-width: 760px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+    /* ── Score hero ── */
+    .score-hero {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem 2rem 2rem 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .score-ring-wrap { flex-shrink: 0; }
+    .score-ring { transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: var(--surface2); stroke-width: 6; }
+    .ring-fg { fill: none; stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1), stroke 0.4s; }
+    .score-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .score-ring-wrap { position: relative; width: 96px; height: 96px; }
+    .score-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+    .score-pct { font-size: 12px; color: var(--muted); }
+    .score-info { flex: 1; }
+    .score-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .score-subtitle { color: var(--muted); font-size: 14px; }
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-top: 10px;
+    }
+
+    /* ── Section ── */
+    .section { margin-bottom: 1.25rem; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 0.75rem;
+    }
+    .section-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .section-count {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: auto;
+    }
+
+    /* ── Gaps list ── */
+    .gaps-list { display: flex; flex-direction: column; gap: 8px; }
+    .gap-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+    }
+    .gap-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+    .gap-text { font-size: 14px; flex: 1; }
+    .gap-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── Rewrite suggestions ── */
+    .rewrite-list { display: flex; flex-direction: column; gap: 10px; }
+    .rewrite-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .rewrite-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      user-select: none;
+      gap: 12px;
+    }
+    .rewrite-header:hover { background: var(--surface2); }
+    .rewrite-section-name {
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rewrite-chevron {
+      color: var(--muted);
+      font-size: 16px;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .rewrite-item.open .rewrite-chevron { transform: rotate(180deg); }
+    .rewrite-body {
+      display: none;
+      border-top: 1px solid var(--border);
+    }
+    .rewrite-item.open .rewrite-body { display: block; }
+    .rewrite-col {
+      padding: 1rem;
+    }
+    .rewrite-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .rewrite-col + .rewrite-col {
+      border-left: 1px solid var(--border);
+    }
+    .rewrite-col-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 8px;
+    }
+    .rewrite-col-text {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+    .rewrite-col.after .rewrite-col-text { color: var(--text); }
+
+    /* ── Actions ── */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      flex: 1;
+      min-width: 160px;
+      padding: 0.85rem 1.25rem;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: opacity 0.15s;
+      text-align: center;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-outline {
+      flex: 1;
+      min-width: 160px;
+      padding: 0.85rem 1.25rem;
+      background: none;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: border-color 0.15s;
+      text-align: center;
+    }
+    .btn-outline:hover { border-color: var(--accent); }
+
+    /* ── Empty / loading state ── */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+    }
+    .empty-state h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 520px) {
+      .score-hero { flex-direction: column; gap: 1.25rem; text-align: center; align-items: center; }
+      .rewrite-cols { grid-template-columns: 1fr; }
+      .rewrite-col + .rewrite-col { border-left: none; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">
+    <div class="logo-dot"></div>
+    CV Matcher
+  </a>
+  <a href="/" class="btn-back">← Analizuj nową ofertę</a>
+</nav>
+
+<div class="page" id="page">
+
+  <!-- wypełniane przez JS -->
+  <div class="empty-state" id="empty-state">
+    <h2>Brak wyników</h2>
+    <p>Wróć na stronę główną i przeprowadź analizę.</p>
+  </div>
+
+</div>
+
+<script src="static/script.js"></script>
+</body>
+</html>
