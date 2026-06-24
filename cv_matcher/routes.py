@@ -9,3 +9,7 @@ def index():
 @main_bp.route('/results')
 def restults():
     return render_template('results.html')
+
+@main_bp.route('/analye', methods = ['POST'])
+def analyze():
+    return jsonify({'score': 42, 'gaps': [], 'rewrite':{}})
