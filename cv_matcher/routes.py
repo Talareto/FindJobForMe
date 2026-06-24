@@ -1,4 +1,9 @@
 from flask import Blueprint, render_template, request, jsonify
+import os
+from cv_matcher.cv_parser import 
+from cv_matcher.job_scraper import 
+from cv_matcher.analyzer import analyze,call_claude,mock_response
+
 
 main_bp = Blueprint("main", __name__)
 
