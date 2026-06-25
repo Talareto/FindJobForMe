@@ -1,4 +1,4 @@
-import pypdf2
+import PyPDF2
 import docx
 import os
 
@@ -18,8 +18,8 @@ def parse_pdf(filepath):
     text = ""
     
     with open(filepath, 'rb') as file:
-        reader = pypdf2.PdfReader(file)
-        for page in reader.pagees:
+        reader = PyPDF2.PdfReader(file)
+        for page in reader.pages:
             text += page.extract_text() + "\n"
     return text.strip()
 

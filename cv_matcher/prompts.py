@@ -19,4 +19,6 @@ CV KANDYDATA:
 
 OFERTA PRACY:
 {job_text}
+
+Nie dodawaj żadnego tekstu przed ani po JSON. Żadnych komentarzy, wyjaśnień ani ostrzeżeń. Tylko czysty JSON.
 """
